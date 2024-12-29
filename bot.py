@@ -2,6 +2,7 @@ import discord
 import os
 import random
 from dotenv import load_dotenv
+from message import messages  # Import messages from message.py
 
 # Load the environment variables
 load_dotenv()
@@ -11,7 +12,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-# Load the bot token from an environment variable or hardcode for now
+# Load the bot token from an environment variable
 TOKEN = os.getenv("TOKEN")
 
 # Folder containing images
@@ -27,15 +28,22 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # Command to send a random image
+    # Command to send a random image with a random message
     if message.content.startswith('!sendimage'):
         try:
             images = os.listdir(IMAGE_FOLDER)
             if images:
+                # Select a random image
                 random_image = random.choice(images)
                 file_path = os.path.join(IMAGE_FOLDER, random_image)
-                print(f"Sending image: {file_path}")  # Debugging
-                await message.channel.send(file=discord.File(file_path))
+                
+                # Select a random message
+                random_message = random.choice(messages)
+                
+                print(f"Sending image: {file_path} with message: {random_message}")  # Debugging
+                
+                # Send the image with the random message
+                await message.channel.send(content=random_message, file=discord.File(file_path))
             else:
                 await message.channel.send("No images available.")
         except Exception as e:
